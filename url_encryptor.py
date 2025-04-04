@@ -6,38 +6,53 @@ path_of_file = "encrypted.txt"
 
 
 def encrypt_msg():
-    key = Fernet.generate_key() # Creating a fernet key to encrypt
-    fernet_object = Fernet(key)
-    # Encoding the user input into a byte string using .encode() as .encrypt() accpets onlyl byte string
-    message = fernet_object.encrypt(input("Enter the message you want to encrypt: ").encode()) 
+    try:
+        key = Fernet.generate_key() # Creating a fernet key to encrypt
+        fernet_object = Fernet(key)
+        # Encoding the user input into a byte string using .encode() as .encrypt() accpets onlyl byte string
+        message = fernet_object.encrypt(input("Enter the message you want to encrypt: ").encode()) 
 
-    with open(path_of_file, "a") as file:
-        file.write(f"{key.decode()} {message.decode()}\n") # Storing the key amn message decoded. Helps in formatting the input string while decrypting messages
+        with open(path_of_file, "a") as file:
+            file.write(f"{key.decode()} {message.decode()}\n") # Storing the key amn message decoded. Helps in formatting the input string while decrypting messages
+
+    except Exception as e:
+        print(f"Error: {e}. \n Restart the program.")
 
 
 def decrypt_msg():
-    with open(path_of_file, "r") as file:
-        for i, line in enumerate(file, start=1):
-            key, message = line.split() # Split the line in file at a whitespace as the key and encrypted message aer stored with a whitespace between them
+    try:
+        with open(path_of_file, "r") as file:
+            for i, line in enumerate(file, start=1):
+                key, message = line.split() # Split the line in file at a whitespace as the key and encrypted message aer stored with a whitespace between them
 
-            fernet_object = Fernet(key.encode()) # Encoding the key into byte string format
-            print(f"{i}. {fernet_object.decrypt(message).decode()}") # Encoding the message into byte string format
+                fernet_object = Fernet(key.encode()) # Encoding the key into byte string format
+                print(f"{i}. {fernet_object.decrypt(message).decode()}") # Encoding the message into byte string format
+
+    except Exception as e:
+        print(f"Error: {e}. \n Restart the program.")
 
 
 def remove_msg():
-    decrypt_msg() # To display the list of currently present lines
+    try:
+        decrypt_msg() # To display the list of currently present lines
 
-    with open(path_of_file, "r+") as file: # Using "r+" mode to both read and write from the file
-        lines_from_file = file.readlines() # Create a list of lines in the file
+        with open(path_of_file, "r+") as file: # Using "r+" mode to both read and write from the file
+            lines_from_file = file.readlines() # Create a list of lines in the file
 
-        line_num = int(input("Enter the serial number of the line/message you want to remove: ")) # Get the line no. to be removed
-        del lines_from_file[line_num - 1] # Remove the specific line from the list of lines
+            line_num = int(input("Enter the serial number of the line/message you want to remove: ")) # Get the line no. to be removed
+            if 1 <= line_num <= len(lines_from_file):
+                del lines_from_file[line_num - 1] # Remove the specific line from the list of lines
+            else:
+                print("Invalid line number. Restart the program.")
 
-        file.seek(0) # Place the cursor at the beginning of the file to truncate it.
-        file.truncate()
-        file.writelines(lines_from_file) # Write the new lines from the modified list of lines
-    
-    print("Line/mesasge successfully removed from the file.")
+            file.seek(0) # Place the cursor at the beginning of the file to truncate it.
+            file.truncate()
+            file.writelines(lines_from_file) # Write the new lines from the modified list of lines
+
+        print("Line/message successfully removed from the file.")
+
+    except Exception as e:
+        print(f"Error: {e}. \n Restart the program.")
 
 
 def file_path():
@@ -46,7 +61,7 @@ def file_path():
 
 def file_delete():
     try:
-        choice = input("Are you sure you want to peranently delete the file? (y / n)?") # Confirmation message
+        choice = input("Are you sure you want to permanently delete the file? (y / n)?") # Confirmation message
 
         if choice.lower().strip() == "y":
             remove(path_of_file)
@@ -58,7 +73,7 @@ def file_delete():
             print("Wrong command, retry.")
 
     except Exception as e:
-        print("Error: {e}")
+        print(f"Error: {e}. \n Restart the program.")
 
 
 def help_txt():
@@ -88,7 +103,7 @@ def main():
         case "--help":
             help_txt()
         case _:
-            print("Invalid command !! Type '--help' to get a list of valid commands.")
+            print("Invalid command!! Type '--help' to get a list of valid commands.")
 
 
 if __name__ == '__main__':
